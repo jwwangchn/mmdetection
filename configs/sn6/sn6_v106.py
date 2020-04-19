@@ -1,4 +1,17 @@
 """
+# test on RGB + SAR:
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.265
+    Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.415
+    Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.297
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.092
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.640
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.646
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.012
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.093
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.277
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.095
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.674
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.682
 
 """
 # model settings
@@ -120,6 +133,16 @@ dataset_type = 'SN6Dataset'
 data_root = 'data/sn6/v1/coco/'
 img_norm_cfg = dict(
     mean=[103.53, 116.28, 123.675, 103.53, 116.28, 123.675], std=[57.375, 57.12, 58.395, 57.375, 57.12, 58.395], to_rgb=False)
+
+fusion_rgb = False
+if fusion_rgb:
+    rgb_img_prefix = data_root + 'train_RGB/'
+    img_norm_cfg_test = img_norm_cfg
+else:
+    rgb_img_prefix = None
+    img_norm_cfg_test = dict(
+        mean=[103.53, 116.28, 123.675], std=[57.375, 57.12, 58.395], to_rgb=False)
+
 train_pipeline = [
     dict(type='LoadSN6ImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
@@ -139,7 +162,7 @@ test_pipeline = [
         transforms=[
             dict(type='Resize', keep_ratio=True),
             dict(type='RandomFlip'),
-            dict(type='Normalize', **img_norm_cfg),
+            dict(type='Normalize', **img_norm_cfg_test),
             dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img']),
@@ -164,7 +187,7 @@ data = dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/sn6_train_v1_SAR-Intensity.json',
         sar_img_prefix=data_root + 'train_SAR/',
-        rgb_img_prefix=data_root + 'train_RGB/',
+        rgb_img_prefix=rgb_img_prefix,
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric=['bbox', 'segm'])
 # optimizer

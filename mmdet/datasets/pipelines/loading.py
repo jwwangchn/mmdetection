@@ -62,7 +62,10 @@ class LoadSN6ImageFromFile(object):
         else:
             rgb_filename = results['img_info']['rgb_filename']
 
-        img = np.concatenate([mmcv.imread(filename, self.color_type) for filename  in [sar_filename, rgb_filename]], axis=-1)
+        if results['rgb_img_prefix'] is not None:
+            img = np.concatenate([mmcv.imread(filename, self.color_type) for filename in [sar_filename, rgb_filename]], axis=-1)
+        else:
+            img = mmcv.imread(sar_filename, self.color_type)
         if self.to_float32:
             img = img.astype(np.float32)
 

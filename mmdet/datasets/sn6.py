@@ -23,8 +23,8 @@ class SN6Dataset(CustomDataset):
                 pipeline,
                 data_root=None,
                 img_prefix=None,
-                rgb_img_prefix='',
-                sar_img_prefix='',
+                sar_img_prefix=None,
+                rgb_img_prefix=None,
                 seg_prefix=None,
                 proposal_file=None,
                 test_mode=False,
@@ -37,8 +37,8 @@ class SN6Dataset(CustomDataset):
                                 proposal_file=proposal_file,
                                 test_mode=test_mode,
                                 filter_empty_gt=filter_empty_gt)
-        self.rgb_img_prefix = rgb_img_prefix
         self.sar_img_prefix = sar_img_prefix
+        self.rgb_img_prefix = rgb_img_prefix
 
     def pre_pipeline(self, results):
         results['sar_img_prefix'] = self.sar_img_prefix

@@ -34,9 +34,14 @@ class MaskRCNNFusion(TwoStageDetector):
         """Directly extract features from the backbone+neck
         """
         sar_img = img[:, 0:3, :, :]
-        rgb_img = img[:, 3:, :, :]
         sar_feature = self.backbone(sar_img)
-        rgb_feature = self.backbone(rgb_img)
+
+        if img.shape[1] == 6:
+            rgb_img = img[:, 3:, :, :]
+            rgb_feature = self.backbone(rgb_img)
+        else:
+            rgb_feature = sar_feature
+
         fusion_feature = []
         for sar_stage_feature, rgb_stage_feature in zip(sar_feature, rgb_feature):
             fusion_feature.append((sar_stage_feature + rgb_stage_feature) / 2.0)
