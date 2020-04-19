@@ -1,6 +1,6 @@
 #!/bin/bash
 #------------------------------config-----------------------------------
-model='sn6_v104'
+model='sn6_v106'
 epoch=12
 dataset='sn6'
 
@@ -15,6 +15,7 @@ elif [ $1 == 2 ]
 then
     # train and debug
     echo "==== start debug training ===="
+    export CUDA_VISIBLE_DEVICES=1
     python tools/train.py configs/${dataset}/${model}.py --gpus 1
 elif [ $1 == 0 ]
 then
@@ -59,5 +60,5 @@ then
 fi
 
 # send the notification email
-cd ../wwtool
-python tools/utils/send_email.py
+# cd ../wwtool
+# python tools/utils/send_email.py

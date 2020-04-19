@@ -43,6 +43,49 @@ class LoadImageFromFile(object):
 
 
 @PIPELINES.register_module
+class LoadSN6ImageFromFile(object):
+
+    def __init__(self, to_float32=False, color_type='color'):
+        self.to_float32 = to_float32
+        self.color_type = color_type
+
+    def __call__(self, results):
+        if results['sar_img_prefix'] is not None:
+            sar_filename = osp.join(results['sar_img_prefix'],
+                                results['img_info']['sar_filename'])
+        else:
+            sar_filename = results['img_info']['sar_filename']
+
+        if results['rgb_img_prefix'] is not None:
+            rgb_filename = osp.join(results['rgb_img_prefix'],
+                                results['img_info']['rgb_filename'])
+        else:
+            rgb_filename = results['img_info']['rgb_filename']
+
+        img = np.concatenate([mmcv.imread(filename, self.color_type) for filename  in [sar_filename, rgb_filename]], axis=-1)
+        if self.to_float32:
+            img = img.astype(np.float32)
+
+        results['filename'] = [sar_filename, rgb_filename]
+        results['img'] = img
+        results['img_shape'] = img.shape
+        results['ori_shape'] = img.shape
+        # Set initial values for default meta_keys
+        results['pad_shape'] = img.shape
+        results['scale_factor'] = 1.0
+        num_channels = 1 if len(img.shape) < 3 else img.shape[2]
+        results['img_norm_cfg'] = dict(
+            mean=np.zeros(num_channels, dtype=np.float32),
+            std=np.ones(num_channels, dtype=np.float32),
+            to_rgb=False)
+        return results
+
+    def __repr__(self):
+        return '{} (to_float32={}, color_type={})'.format(
+            self.__class__.__name__, self.to_float32, self.color_type)
+
+
+@PIPELINES.register_module
 class LoadMultiChannelImageFromFiles(object):
     """ Load multi channel images from a list of separate channel files.
     Expects results['filename'] to be a list of filenames
