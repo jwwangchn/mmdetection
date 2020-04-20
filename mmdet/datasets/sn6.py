@@ -24,6 +24,7 @@ class SN6Dataset(CustomDataset):
                 data_root=None,
                 img_prefix=None,
                 sar_img_prefix=None,
+                four_band_sar = False,
                 rgb_img_prefix=None,
                 seg_prefix=None,
                 proposal_file=None,
@@ -38,10 +39,12 @@ class SN6Dataset(CustomDataset):
                                 test_mode=test_mode,
                                 filter_empty_gt=filter_empty_gt)
         self.sar_img_prefix = sar_img_prefix
+        self.four_band_sar = four_band_sar
         self.rgb_img_prefix = rgb_img_prefix
 
     def pre_pipeline(self, results):
         results['sar_img_prefix'] = self.sar_img_prefix
+        results['four_band_sar'] = self.four_band_sar
         results['rgb_img_prefix'] = self.rgb_img_prefix
         results['seg_prefix'] = self.seg_prefix
         results['proposal_file'] = self.proposal_file

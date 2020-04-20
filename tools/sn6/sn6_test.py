@@ -63,7 +63,7 @@ def parse_args():
     parser.add_argument('--imageset', default='test', help='imageset of evaluation')
     parser.add_argument('--image_source', default='SAR-Intensity', help='PS-RGB or SAR-Intensity')
     parser.add_argument('--epoch', default=12, help='epoch')
-    parser.add_argument('--evaluation', default=False, help='evaluation flag')
+    parser.add_argument('--evaluation', action='store_true', help='evaluation flag')
     parser.add_argument('--show', action='store_true', help='show flag')
 
     args = parser.parse_args()

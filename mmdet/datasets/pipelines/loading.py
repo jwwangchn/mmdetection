@@ -3,6 +3,7 @@ import os.path as osp
 import mmcv
 import numpy as np
 import pycocotools.mask as maskUtils
+import rasterio
 
 from ..registry import PIPELINES
 
@@ -65,7 +66,13 @@ class LoadSN6ImageFromFile(object):
         if results['rgb_img_prefix'] is not None:
             img = np.concatenate([mmcv.imread(filename, self.color_type) for filename in [sar_filename, rgb_filename]], axis=-1)
         else:
-            img = mmcv.imread(sar_filename, self.color_type)
+            if results['four_band_sar']:
+                with rasterio.open(sar_filename) as src:
+                    img = src.read()
+                    img = img.transpose(1, 2, 0)
+            else:
+                img = mmcv.imread(sar_filename, self.color_type)
+
         if self.to_float32:
             img = img.astype(np.float32)
 
