@@ -7,6 +7,8 @@ import pandas as pd
 import argparse
 import pycocotools.mask as maskUtils
 import solaris as sol
+import rasterio
+
 
 from mmdet.apis import init_detector, inference_detector, show_result
 
@@ -89,10 +91,18 @@ if __name__ == "__main__":
     firstfile = True
     for img_name in img_list:
         img_file = os.path.join(img_dir, img_name)
-        img = cv2.imread(img_file)
+        if mmcv.Config.fromfile(config_file)['data']['test']['four_band_sar']:
+            with rasterio.open(img_file) as src:
+                img = src.read()
+                for channel in range(img.shape[0]):
+                    img[channel] = img[channel] / img[channel].max() * 255.0
+                    img[channel] = img[channel].astype("uint8")
+                img = img.transpose(1, 2, 0)
+        else:
+            img = cv2.imread(img_file)
         if args.show:
             wwtool.show_image(img, win_name='original')
-        bbox_result, segm_result = inference_detector(model, img_file)
+        bbox_result, segm_result = inference_detector(model, img)
         # show_result(img, (bbox_result, segm_result), model.CLASSES, score_thr=0.5)
         # wwtool.imshow_bboxes(img, bbox_result[0][:, 0:-1], show=True)
         binary_mask = mask2segm(bbox_result, segm_result, show_flag=args.show)

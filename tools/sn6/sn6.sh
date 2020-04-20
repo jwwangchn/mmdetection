@@ -1,6 +1,6 @@
 #!/bin/bash
 #------------------------------config-----------------------------------
-model='sn6_v106'
+model='sn6_v107'
 epoch=12
 dataset='sn6'
 
@@ -52,7 +52,8 @@ then
 elif [ $3 == 2 ]
 then
     echo "==== start testset csv file generation ===="
-    python tools/sn6/sn6_test.py --config_version ${model} --imageset test --epoch 24 --evaluation False
+    export CUDA_VISIBLE_DEVICES=1
+    python tools/sn6/sn6_test.py --config_version ${model} --imageset test --epoch 12 --evaluation --image_source test_SAR_4band 
 elif [ $3 == 0 ]
 then
     # read the results file

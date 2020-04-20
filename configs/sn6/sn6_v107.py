@@ -1,6 +1,19 @@
 """
     Multi band SAR input
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.074
+    Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.200
+    Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.036
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.014
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.194
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.255
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.007
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.045
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.098
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.019
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.265
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.310
 
+    F1 Score = 32.4 (on training set)
 """
 # model settings
 model = dict(
@@ -165,7 +178,7 @@ data = dict(
     test=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/sn6_train_v1_SAR-Intensity.json',
-        sar_img_prefix=data_root + 'test_SAR_4band/',
+        sar_img_prefix=data_root + 'train_SAR_4band/',
         four_band_sar=True,
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric=['bbox', 'segm'])
@@ -178,7 +191,7 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=1.0 / 3,
-    step=[8, 11])
+    step=[16, 22])
 checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
@@ -189,7 +202,7 @@ log_config = dict(
     ])
 # yapf:enable
 # runtime settings
-total_epochs = 12
+total_epochs = 24
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/sn6_v107'

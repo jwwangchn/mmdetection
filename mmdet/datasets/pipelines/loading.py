@@ -69,7 +69,9 @@ class LoadSN6ImageFromFile(object):
             if results['four_band_sar']:
                 with rasterio.open(sar_filename) as src:
                     img = src.read()
-                    img = img.transpose(1, 2, 0)
+                    for channel in range(img.shape[0]):
+                        img[channel] = img[channel] / img[channel].max() * 255.0
+                    img = img.transpose(1, 2, 0)    # convert (C, W, H) to (W, H, C)
             else:
                 img = mmcv.imread(sar_filename, self.color_type)
 
