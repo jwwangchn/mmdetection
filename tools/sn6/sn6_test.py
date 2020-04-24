@@ -91,14 +91,17 @@ if __name__ == "__main__":
     firstfile = True
     for img_name in img_list:
         img_file = os.path.join(img_dir, img_name)
-        if mmcv.Config.fromfile(config_file)['data']['test']['four_band_sar']:
-            with rasterio.open(img_file) as src:
-                img = src.read()
-                for channel in range(img.shape[0]):
-                    img[channel] = img[channel] / img[channel].max() * 255.0
-                    img[channel] = img[channel].astype("uint8")
-                img = img.transpose(1, 2, 0)
-        else:
+        try:
+            if mmcv.Config.fromfile(config_file)['data']['test']['four_band_sar']:
+                with rasterio.open(img_file) as src:
+                    img = src.read()
+                    for channel in range(img.shape[0]):
+                        img[channel] = img[channel] / img[channel].max() * 255.0
+                        img[channel] = img[channel].astype("uint8")
+                    img = img.transpose(1, 2, 0)
+            else:
+                img = cv2.imread(img_file)
+        except KeyError:
             img = cv2.imread(img_file)
         if args.show:
             wwtool.show_image(img, win_name='original')

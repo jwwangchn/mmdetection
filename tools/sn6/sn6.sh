@@ -1,7 +1,7 @@
 #!/bin/bash
 #------------------------------config-----------------------------------
-model='sn6_v107'
-epoch=12
+model='sn6_v111'
+epoch=24
 dataset='sn6'
 
 #------------------------------train-----------------------------------
@@ -48,12 +48,12 @@ fi
 if [ $3 == 1 ]
 then
     echo "==== start training set F1 Score calculating ===="
-    python tools/sn6/sn6_evaluation.py --config_version ${model} --imageset train
+    python tools/sn6/sn6_evaluation.py --config_version ${model} --imageset val
 elif [ $3 == 2 ]
 then
     echo "==== start testset csv file generation ===="
     export CUDA_VISIBLE_DEVICES=1
-    python tools/sn6/sn6_test.py --config_version ${model} --imageset test --epoch 12 --evaluation --image_source test_SAR_4band 
+    python tools/sn6/sn6_test.py --config_version ${model} --imageset test --epoch ${epoch} --image_source SAR-Intensity
 elif [ $3 == 0 ]
 then
     # read the results file

@@ -76,7 +76,10 @@ if __name__ == "__main__":
 
     # csv file
     predcsv_file = './results/{}/{}/SN6_Test_Public_AOI_11_Rotterdam_Buildings.csv'.format(args.dataset, args.config_version)
-    truthcsv_file = './data/sn6/v1/{}/labels/SN6_Train_AOI_11_Rotterdam_Buildings.csv'.format(args.imageset)
+    if 'val' in mmcv.Config.fromfile(config_file)['data']['test']['ann_file']:
+        truthcsv_file = './data/sn6/v1/{}/labels/valset_ground_truth.csv'.format(args.imageset)
+    else:
+        truthcsv_file = './data/sn6/v1/{}/labels/SN6_Train_AOI_11_Rotterdam_Buildings.csv'.format(args.imageset)
 
     # load COCO
     coco=COCO(annopath)
